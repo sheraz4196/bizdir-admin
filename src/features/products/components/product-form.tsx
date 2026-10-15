@@ -24,7 +24,7 @@ export default function ProductForm({
     ...createProductMutation,
     onSuccess: () => {
       toast.success('Product created successfully');
-      router.navigate({ to: '/dashboard/product' });
+      router.navigate({ to: '/dashboard/overview' });
     },
     onError: () => {
       toast.error('Failed to create product');
@@ -35,7 +35,7 @@ export default function ProductForm({
     ...updateProductMutation,
     onSuccess: () => {
       toast.success('Product updated successfully');
-      router.navigate({ to: '/dashboard/product' });
+      router.navigate({ to: '/dashboard/overview' });
     },
     onError: () => {
       toast.error('Failed to update product');

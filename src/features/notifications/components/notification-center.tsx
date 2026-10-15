@@ -12,7 +12,7 @@ const MAX_VISIBLE = 5;
 
 const actionRoutes: Record<string, string> = {
   view: '/dashboard/overview',
-  'view-product': '/dashboard/product',
+  'view-product': '/dashboard/overview',
   billing: '/dashboard/overview',
   open: '/dashboard/kanban',
   'open-chat': '/dashboard/chat'
@@ -39,7 +39,7 @@ export function NotificationCenter() {
       </PopoverTrigger>
       <PopoverContent align='end' className='w-[calc(100vw-2rem)] p-0 sm:w-[380px]' sideOffset={8}>
         <div className='flex items-center justify-between px-4 py-3'>
-          <Link to='/dashboard/notifications' className='group flex items-center gap-1'>
+          <Link to='/dashboard/overview' className='group flex items-center gap-1'>
             <h4 className='text-sm font-semibold group-hover:underline'>Notifications</h4>
             <Icons.chevronRight className='text-muted-foreground h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5' />
           </Link>

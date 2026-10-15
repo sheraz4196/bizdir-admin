@@ -1,6 +1,5 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { createServerFn } from '@tanstack/react-start';
 
 import { Toaster } from '@/components/ui/sonner';
@@ -81,7 +80,6 @@ function RootDocument() {
             <Outlet />
           </ActiveThemeProvider>
         </ThemeProvider>
-        <TanStackRouterDevtools position='bottom-left' />
         <Scripts />
       </body>
     </html>

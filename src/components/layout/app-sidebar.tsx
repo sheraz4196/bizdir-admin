@@ -140,9 +140,7 @@ export default function AppSidebar() {
                 sideOffset={4}
               >
                 <DropdownMenuGroup>
-                  <DropdownMenuItem
-                    onClick={() => router.navigate({ to: '/dashboard/notifications' })}
-                  >
+                  <DropdownMenuItem onClick={() => router.navigate({ to: '/dashboard/overview' })}>
                     <Icons.notification className='mr-2 h-4 w-4' />
                     Notifications
                   </DropdownMenuItem>
