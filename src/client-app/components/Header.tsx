@@ -14,6 +14,12 @@ export default function Header() {
         </a>
         {/* Header Actions */}
         <div className='flex items-center gap-2 sm:gap-3'>
+          <a
+            href='/admin'
+            className='rounded-full px-3 py-2 text-sm font-semibold text-jd-orange transition hover:bg-jd-light'
+          >
+            Admin
+          </a>
           <Button
             variant='unstyled'
             size='unstyled'

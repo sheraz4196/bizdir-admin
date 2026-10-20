@@ -30,7 +30,7 @@ export function Overview() {
         </div>
         <Link
           className='bd-btn bd-primary'
-          to='/dashboard/$resource'
+          to='/admin/$resource'
           params={{ resource: 'business' }}
           search={{} as never}
         >
@@ -82,7 +82,7 @@ export function Overview() {
           <Link
             key={s.label}
             className='bd-stat'
-            to='/dashboard/$resource'
+            to='/admin/$resource'
             params={{ resource: s.resource }}
           >
             <div>
@@ -104,7 +104,7 @@ export function Overview() {
               <h2>Recently added places</h2>
               <p>The newest additions to your directory.</p>
             </div>
-            <Link to='/dashboard/$resource' params={{ resource: 'business' }}>
+            <Link to='/admin/$resource' params={{ resource: 'business' }}>
               View all <ArrowUpRight size={14} />
             </Link>
           </div>
@@ -180,7 +180,7 @@ export function Overview() {
                 desc: 'Keep your community trusted'
               }
             ].map((a) => (
-              <Link to='/dashboard/$resource' params={{ resource: a.resource }} key={a.title}>
+              <Link to='/admin/$resource' params={{ resource: a.resource }} key={a.title}>
                 <span className='bd-attention-icon'>
                   <a.icon size={19} />
                 </span>
@@ -273,7 +273,7 @@ export function Overview() {
             discovered.
           </p>
         </div>
-        <Link className='bd-btn' to='/dashboard/$resource' params={{ resource: 'location' }}>
+        <Link className='bd-btn' to='/admin/$resource' params={{ resource: 'location' }}>
           Explore locations
           <ArrowUpRight size={16} />
         </Link>

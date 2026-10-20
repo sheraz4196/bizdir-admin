@@ -1,12 +1,11 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { AdminShell } from '@/features/admin/shell';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 export const Route = createFileRoute('/dashboard')({
-  head: () => ({
-    meta: [{ title: 'Bizdir Admin' }, { name: 'robots', content: 'noindex, nofollow' }]
-  }),
-  component: () => (
-    <AdminShell>
-      <Outlet />
-    </AdminShell>
-  )
+  beforeLoad: ({ location }) => {
+    const resource = location.pathname.split('/')[2];
+    throw redirect(
+      resource && resource !== 'overview'
+        ? { to: '/admin/$resource', params: { resource } }
+        : { to: '/admin' }
+    );
+  }
 });

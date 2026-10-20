@@ -152,7 +152,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         />
       )}
       <aside className={`bd-sidebar ${open ? 'is-open' : ''}`}>
-        <Link to='/dashboard/overview' className='bd-brand'>
+        <Link to='/admin' className='bd-brand'>
           <span className='bd-logo'>
             <Building2 size={22} />
           </span>
@@ -167,9 +167,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </div>
         <nav>
           <Link
-            to='/dashboard/overview'
+            to='/admin'
             onClick={() => setOpen(false)}
-            className={`bd-nav-link ${pathname.endsWith('/overview') ? 'active' : ''}`}
+            className={`bd-nav-link ${pathname.replace(/\/$/, '') === '/admin' ? 'active' : ''}`}
           >
             <LayoutDashboard size={17} />
             Overview
@@ -183,7 +183,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 return (
                   <Link
                     key={name}
-                    to='/dashboard/$resource'
+                    to='/admin/$resource'
                     params={{ resource: name }}
                     onClick={() => setOpen(false)}
                     className={`bd-nav-link ${pathname.endsWith('/' + name) ? 'active' : ''}`}
@@ -220,7 +220,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <div>
             Workspace <ChevronRight size={13} />
             <strong>
-              {pathname.endsWith('/overview')
+              {pathname.replace(/\/$/, '') === '/admin'
                 ? 'Overview'
                 : models.find((m) => pathname.endsWith('/' + m.name))?.label || 'Dashboard'}
             </strong>
