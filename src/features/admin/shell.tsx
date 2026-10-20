@@ -1,3 +1,4 @@
+import { Brand } from '@/components/brand';
 import { useState, type ReactNode } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -70,10 +71,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       <div className='bd-app bd-login'>
         <div className='bd-login-art'>
           <div className='bd-brand'>
-            <span className='bd-logo'>
-              <Building2 />
-            </span>
-            bizdir<span className='bd-brand-tag'>ADMIN</span>
+            <Brand admin />
           </div>
           <div>
             <span className='bd-eyebrow'>THE LOCAL BUSINESS WORKSPACE</span>
@@ -109,7 +107,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <span className='bd-login-icon'>
             <ShieldCheck />
           </span>
-          <span className='bd-eyebrow'>BIZDIR ADMIN</span>
+          <span className='bd-eyebrow'>JUSTDIAL ADMIN</span>
           <h2>Welcome to your workspace</h2>
           <p>Sign in to manage your business directory.</p>
           <label>
@@ -153,15 +151,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
       )}
       <aside className={`bd-sidebar ${open ? 'is-open' : ''}`}>
         <Link to='/admin' className='bd-brand'>
-          <span className='bd-logo'>
-            <Building2 size={22} />
-          </span>
-          bizdir<span className='bd-brand-tag'>ADMIN</span>
+          <Brand admin />
         </Link>
         <div className='bd-workspace-label'>
-          <span className='bd-avatar'>B</span>
+          <span className='bd-avatar'>JD</span>
           <div>
-            Bizdir workspace<small>Directory management</small>
+            JustDial workspace<small>Directory management</small>
           </div>
           <ShieldCheck size={17} />
         </div>
@@ -225,14 +220,19 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 : models.find((m) => pathname.endsWith('/' + m.name))?.label || 'Dashboard'}
             </strong>
           </div>
-          <span className='bd-private'>
-            <ShieldCheck size={14} />
-            Admin workspace
-          </span>
+          <div className='bd-topbar-actions'>
+            <a href='/' className='bd-view-directory'>
+              View directory
+            </a>
+            <span className='bd-private'>
+              <ShieldCheck size={14} />
+              Admin workspace
+            </span>
+          </div>
         </header>
         {children}
         <footer className='bd-footer'>
-          © {new Date().getFullYear()} Bizdir{' '}
+          © {new Date().getFullYear()} JustDial{' '}
           <span>A little more local. A lot more connected.</span>
         </footer>
       </main>

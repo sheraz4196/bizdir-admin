@@ -26,7 +26,7 @@ export function Overview() {
           <h1>
             Workspace overview<span className='bd-title-dot'>.</span>
           </h1>
-          <p>Welcome back. Here’s what’s happening across Bizdir.</p>
+          <p>Welcome back. Here’s what’s happening across JustDial.</p>
         </div>
         <Link
           className='bd-btn bd-primary'

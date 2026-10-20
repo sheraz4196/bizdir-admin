@@ -1,16 +1,12 @@
+import { Brand } from '@/components/brand';
 import { Button } from '@/client-app/components/ui/button';
 export default function Header() {
   return (
     <header className='sticky top-0 z-50 h-16 border-b border-jd-line bg-white/95 shadow-sm backdrop-blur'>
       <div className='mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8'>
         {/* Logo */}
-        <a href='#' className='group flex items-center gap-2.5' aria-label='JustDial home'>
-          <span className='jd-logo-mark transition-all duration-200 group-hover:-translate-y-0.5 group-hover:shadow-orange'>
-            JD
-          </span>
-          <span className='text-[21px] font-extrabold tracking-[-0.055em] text-ink'>
-            Just<span className='text-jd-orange'>Dial</span>
-          </span>
+        <a href='/' className='group flex items-center gap-2.5' aria-label='JustDial home'>
+          <Brand />
         </a>
         {/* Header Actions */}
         <div className='flex items-center gap-2 sm:gap-3'>

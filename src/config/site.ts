@@ -6,10 +6,10 @@
  * It is used to build absolute URLs for og:image / twitter:image and the sitemap.
  */
 export const siteConfig = {
-  name: 'Bizdir Admin',
+  name: 'JustDial',
   // Canonical production URL — change this to your deployed domain.
-  url: 'https://tanstack-start-dashboard.kiranism.dev',
-  description: 'Manage the Bizdir business directory, places, locations, community, and commerce.',
+  url: import.meta.env.VITE_SITE_URL || 'http://localhost:3000',
+  description: 'Discover local businesses and manage the JustDial directory in one application.',
   // Path (relative to the site root) of the Open Graph / Twitter share image.
   ogImage: '/tanstack-dashboard.png',
   keywords: [
