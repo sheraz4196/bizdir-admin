@@ -6,7 +6,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { nitro } from 'nitro/vite';
 
 export default defineConfig({
-  server: { port: 3001 },
+  server: { port: 3000, strictPort: true },
   plugins: [
     tsconfigPaths(),
     tailwindcss(),
