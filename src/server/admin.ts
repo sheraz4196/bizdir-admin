@@ -1,5 +1,6 @@
 import { database, Prisma } from './db';
 import { requireAdmin, checkOrigin } from './auth';
+import { reference } from '@/features/admin/options';
 import { type Model } from '@/features/admin/models';
 import { getModel as model, convert, type Row } from './record-validation';
 import {
@@ -58,6 +59,38 @@ export async function read(input: { model: string; page: number; search: string;
         coords.find((c) => c.id === row.id)
       );
   }
+  const targets = new Map<string, Set<any>>();
+  for (const f of m.fields) {
+    const target = reference(m.name, f.name);
+    if (!target) continue;
+    for (const row of rows)
+      if (row[f.name] != null) {
+        if (!targets.has(target)) targets.set(target, new Set());
+        targets.get(target)!.add(row[f.name]);
+      }
+  }
+  const labels = new Map<string, Map<string, string>>();
+  await Promise.all(
+    [...targets].map(async ([target, ids]) => {
+      const records: Row[] = await delegate(target).findMany({ where: { id: { in: [...ids] } } });
+      labels.set(
+        target,
+        new Map(
+          records.map((r) => [
+            String(r.id),
+            `${r.name ?? r.display_name ?? r.customer_name ?? r.reference ?? 'Record'} · #${r.id}`
+          ])
+        )
+      );
+    })
+  );
+  for (const row of rows) {
+    row._labels = {};
+    for (const f of m.fields) {
+      const target = reference(m.name, f.name);
+      if (target) row._labels[f.name] = labels.get(target)?.get(String(row[f.name]));
+    }
+  }
   return json({ rows, total });
 }
 export async function getLookup(input: {
@@ -65,6 +98,8 @@ export async function getLookup(input: {
   search: string;
   id?: string;
   field?: string;
+  parentId?: string;
+  levels?: string[];
 }) {
   requireAdmin();
   const m = model(input.model);
@@ -77,23 +112,29 @@ export async function getLookup(input: {
     'raw_query',
     'code'
   ].find((k) => m.fields.some((f) => f.name === k));
-  const where: Row = filter(m, input.search, '');
-  if (input.id)
-    where.OR = [
-      ...(where.OR || []),
-      { id: convert(m.fields.find((f) => f.name === 'id')!, input.id) }
-    ];
-  if (input.field === 'primary_concept_id') where.type = 'category';
-  if (input.field === 'city_id') where.level = 'city';
-  if (input.field === 'locality_id') where.level = 'locality';
+  const scope: Row = {};
+  if (m.name === 'location') {
+    if (input.field === 'city_id') scope.level = 'city';
+    if (input.field === 'locality_id') scope.level = 'locality';
+    if (input.levels) scope.level = { in: input.levels };
+    if (input.parentId)
+      scope.parent_id = convert(m.fields.find((f) => f.name === 'parent_id')!, input.parentId);
+  }
+  if (m.name === 'concept' && input.field === 'primary_concept_id') scope.type = 'category';
+  if (m.name === 'attribute_option' && input.parentId) scope.attribute_id = Number(input.parentId);
+  const rows: Row[] = await delegate(m.name).findMany({
+    where: { ...filter(m, input.search, ''), ...scope },
+    take: 50,
+    orderBy: label ? { [label]: 'asc' } : { id: 'desc' }
+  });
+  if (input.id && !rows.some((r) => String(r.id) === input.id)) {
+    const current = await delegate(m.name).findFirst({
+      where: { ...scope, id: convert(m.fields.find((f) => f.name === 'id')!, input.id) }
+    });
+    if (current) rows.unshift(current);
+  }
   return json(
-    (
-      await delegate(m.name).findMany({
-        where,
-        take: 50,
-        orderBy: label ? { [label]: 'asc' } : { id: 'desc' }
-      })
-    ).map((r: Row) => ({
+    rows.map((r) => ({
       id: r.id,
       label: label ? `${r[label]} · #${r.id}` : `#${r.id}`,
       parent_id: r.parent_id,

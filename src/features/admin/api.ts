@@ -37,7 +37,12 @@ export const lookup = createServerFn({ method: 'GET' })
       model: z.string(),
       search: z.string().max(100).default(''),
       id: z.string().optional(),
-      field: z.string().optional()
+      field: z.string().optional(),
+      parentId: z.string().regex(/^\d+$/).optional(),
+      levels: z
+        .array(z.enum(['state', 'district', 'city', 'locality', 'landmark']))
+        .max(5)
+        .optional()
     })
   )
   .handler(async ({ data }) => {

@@ -19,6 +19,7 @@ import { models, type Model, type Field } from './models';
 import { human, options, reference } from './options';
 import { readData, saveRecord, deleteRecord, lookup } from './api';
 type Row = Record<string, any>;
+type LocationLevel = 'state' | 'district' | 'city' | 'locality' | 'landmark';
 const descriptions: Record<string, string> = {
   business: 'Manage the places people discover, visit, and love.',
   location: 'Build your local reach, from states to neighborhoods.',
@@ -32,13 +33,17 @@ function Relation({
   field,
   value,
   onChange,
-  required
+  required,
+  parentId,
+  levels
 }: {
   model: string;
   field: string;
   value: any;
   onChange: (v: string) => void;
   required: boolean;
+  parentId?: string;
+  levels?: LocationLevel[];
 }) {
   const [search, setSearch] = useState('');
   const [term, setTerm] = useState('');
@@ -47,9 +52,18 @@ function Relation({
     return () => clearTimeout(t);
   }, [search]);
   const q = useQuery({
-    queryKey: ['admin-lookup', model, term, value, field],
+    queryKey: ['admin-lookup', model, term, value, field, parentId, levels],
     queryFn: () =>
-      lookup({ data: { model, search: term, id: value ? String(value) : undefined, field } })
+      lookup({
+        data: {
+          model,
+          search: term,
+          id: value ? String(value) : undefined,
+          field,
+          parentId,
+          levels
+        }
+      })
   });
   return (
     <div className='bd-relation'>
@@ -59,7 +73,12 @@ function Relation({
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      <select required={required} value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
+      <select
+        aria-label={human(field)}
+        required={required}
+        value={value ?? ''}
+        onChange={(e) => onChange(e.target.value)}
+      >
         <option value=''>{q.isPending ? 'Loading…' : 'Select a record'}</option>
         {value && !q.data?.some((r: any) => String(r.id) === String(value)) && (
           <option value={value}>Current record #{value}</option>
@@ -137,13 +156,18 @@ function Editor({
       .normalize('NFKD')
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, m.name === 'concept' || m.name === 'attribute' ? '_' : '-')
+      .replace(
+        /[^a-z0-9]+/g,
+        ['concept', 'attribute', 'attribute_option'].includes(m.name) ? '_' : '-'
+      )
       .replace(/^[-_]+|[-_]+$/g, '');
   const set = (name: string, value: any) =>
     setValues((v) => ({
       ...v,
       [name]: value,
       ...(name === 'city_id' ? { locality_id: '' } : {}),
+      ...(name === 'attribute_id' ? { option_id: '' } : {}),
+      ...(m.name === 'location' && name === 'level' ? { parent_id: '' } : {}),
       ...(!original &&
       name === 'name' &&
       m.fields.some((f) => f.name === 'slug') &&
@@ -192,16 +216,38 @@ function Editor({
           value={value}
           onChange={(v) => set(f.name, v)}
           required={f.required}
+          parentId={
+            f.name === 'locality_id' && values.city_id
+              ? String(values.city_id)
+              : f.name === 'option_id' && values.attribute_id
+                ? String(values.attribute_id)
+                : undefined
+          }
+          levels={
+            m.name === 'location' && f.name === 'parent_id'
+              ? (
+                  {
+                    state: [],
+                    district: ['state'],
+                    city: ['district'],
+                    locality: ['city'],
+                    landmark: ['city', 'locality']
+                  } as Record<string, LocationLevel[]>
+                )[values.level]
+              : undefined
+          }
         />
       );
     if (f.type === 'DateTime' && value) {
       const date = new Date(value);
       if (!isNaN(date.getTime()))
         value = f.timeOnly
-          ? date.toISOString().slice(11, 16)
+          ? date.toISOString().slice(11, 19)
           : f.dateOnly
             ? date.toISOString().slice(0, 10)
-            : date.toISOString().slice(0, 16);
+            : new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
     }
     if (f.type === 'Json' && typeof value !== 'string') value = JSON.stringify(value, null, 2);
     if (['description', 'comment', 'message', 'srtext', 'parsed'].includes(f.name))
@@ -240,12 +286,19 @@ function Editor({
           f.name === 'phone' || f.name === 'customer_phone'
             ? '+919876543210'
             : f.name === 'slug'
-              ? m.name === 'concept' || m.name === 'attribute'
+              ? ['concept', 'attribute', 'attribute_option'].includes(m.name)
                 ? 'example_category'
                 : 'example-place'
               : ''
         }
-        onChange={(e) => set(f.name, e.target.value)}
+        onChange={(e) =>
+          set(
+            f.name,
+            f.type === 'DateTime' && !f.dateOnly && !f.timeOnly && e.target.value
+              ? new Date(e.target.value).toISOString()
+              : e.target.value
+          )
+        }
       />
     );
   }
@@ -293,6 +346,13 @@ function Editor({
                 Opening hours, and Place media to complete the listing.
               </div>
             )}
+            {m.name === 'business_attribute' && (
+              <div className='bd-form-note'>
+                For a yes/no attribute, leave numeric value and option empty. Number attributes
+                require a numeric value; choice attributes require an option belonging to that
+                attribute.
+              </div>
+            )}
             <div className='bd-form-grid'>
               {m.name === 'business' && (
                 <label className='bd-field bd-full'>
@@ -304,7 +364,7 @@ function Editor({
                     field='primary_concept_id'
                     value={values.primary_concept_id}
                     onChange={(v) => set('primary_concept_id', v)}
-                    required={!original}
+                    required
                   />
                 </label>
               )}
@@ -324,7 +384,10 @@ function Editor({
                   {f.name === 'slug' && (
                     <small>
                       Unique URL identifier. Use lowercase letters, numbers, and{' '}
-                      {m.name === 'concept' || m.name === 'attribute' ? 'underscores' : 'hyphens'}.
+                      {['concept', 'attribute', 'attribute_option'].includes(m.name)
+                        ? 'underscores'
+                        : 'hyphens'}
+                      .
                     </small>
                   )}
                 </label>
@@ -522,10 +585,10 @@ export function ResourcePage({ resource }: { resource: string }) {
                         ) : c === 'created_at' ? (
                           new Date(r[c]).toLocaleDateString()
                         ) : i === 0 ? (
-                          <strong>{display(r[c])}</strong>
+                          <strong>{display(r._labels?.[c] ?? r[c])}</strong>
                         ) : (
-                          <span title={display(r[c])} className='bd-truncate'>
-                            {display(r[c])}
+                          <span title={display(r._labels?.[c] ?? r[c])} className='bd-truncate'>
+                            {display(r._labels?.[c] ?? r[c])}
                           </span>
                         )}
                       </td>
@@ -639,14 +702,18 @@ export function ResourcePage({ resource }: { resource: string }) {
             </div>
             <div className='bd-editor-body'>
               <dl className='bd-details'>
-                {Object.entries(inspecting).map(([key, value]) => (
-                  <div key={key}>
-                    <dt>{human(key)}</dt>
-                    <dd>
-                      {typeof value === 'object' ? JSON.stringify(value, null, 2) : display(value)}
-                    </dd>
-                  </div>
-                ))}
+                {Object.entries(inspecting)
+                  .filter(([key]) => !key.startsWith('_'))
+                  .map(([key, value]) => (
+                    <div key={key}>
+                      <dt>{human(key)}</dt>
+                      <dd>
+                        {typeof value === 'object'
+                          ? JSON.stringify(value, null, 2)
+                          : display(value)}
+                      </dd>
+                    </div>
+                  ))}
               </dl>
             </div>
           </section>
