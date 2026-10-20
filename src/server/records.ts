@@ -36,6 +36,30 @@ export async function saveWithinTransaction(tx: Transaction, input: RecordInput)
     : undefined;
   const values = clean(m, input.values, !!existing);
   const effective = { ...existing, ...values };
+  if (m.name === 'business_attribute') {
+    const attribute = await tx.attribute.findUniqueOrThrow({
+      where: { id: effective.attribute_id }
+    });
+    if (
+      attribute.value_type === 'bool' &&
+      (effective.value_number != null || effective.option_id != null)
+    )
+      throw new Error('Yes/no attributes do not accept a number or option.');
+    if (
+      attribute.value_type === 'number' &&
+      (effective.value_number == null || effective.option_id != null)
+    )
+      throw new Error('Number attributes require a numeric value and no option.');
+    if (attribute.value_type === 'choice') {
+      if (!effective.option_id || effective.value_number != null)
+        throw new Error('Choice attributes require an option and no numeric value.');
+      const option = await tx.attribute_option.findUniqueOrThrow({
+        where: { id: effective.option_id }
+      });
+      if (option.attribute_id !== attribute.id)
+        throw new Error('Choose an option belonging to the selected attribute.');
+    }
+  }
   if (m.name === 'lead') {
     const status = effective.status ?? 'new';
     if (status === 'booked' && effective.booking_value == null)
