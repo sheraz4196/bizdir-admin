@@ -80,3 +80,19 @@ test('aliases normalize consistently and constraints fail before database writes
     /Closing time/
   );
 });
+
+test('lead phones accept international numbers and resource keys match the live schema', () => {
+  const lead = clean(getModel('lead'), { business_id: '1', customer_phone: '+14155552671' }, false);
+  assert.equal(lead.customer_phone, '+14155552671');
+  assert.deepEqual(getModel('business_attribute').keys, ['id']);
+  assert.deepEqual(getModel('attribute_alias').keys, ['text']);
+  for (const name of [
+    'business_claim',
+    'business_closure',
+    'attribute_option',
+    'concept_attribute'
+  ])
+    assert.ok(getModel(name).fields.length > 0);
+  for (const name of ['lead_status_history', 'search_impression'])
+    assert.ok(getModel(name).readonly);
+});

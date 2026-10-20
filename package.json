@@ -15,9 +15,13 @@
     "lint:fix": "oxlint --fix",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
-    "db:generate": "prisma generate",
+    "db:generate": "prisma generate && npm run admin:generate",
     "typecheck": "tsc --noEmit",
-    "db:check": "tsx scripts/check-db.ts"
+    "db:check": "tsx scripts/check-db.ts",
+    "check:smoke": "node scripts/smoke-admin.mjs",
+    "admin:generate": "node scripts/generate-admin-models.mjs && oxfmt --write src/features/admin/models.ts",
+    "test": "node --import tsx src/server/__tests__/record-validation.test.ts",
+    "test:db": "node --import tsx scripts/test-admin-records.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
