@@ -47,6 +47,20 @@ assert(
   (await admin.text()).includes('JustDial Admin'),
   'Admin must render in the same application at /admin.'
 );
+for (const path of [
+  '/admin',
+  '/result?query=restaurants',
+  '/admin/business',
+  '/result?query=plumber',
+  '/admin'
+]) {
+  const response = await fetch(base + path);
+  assert.equal(response.status, 200, `Route failed: ${path}`);
+  assert(
+    !(await response.text()).includes('isDehydrated'),
+    'A request reused another router cache.'
+  );
+}
 for (const [from, to] of [
   ['/dashboard', '/admin'],
   ['/dashboard/overview', '/admin'],

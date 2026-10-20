@@ -1,3 +1,4 @@
+import { getQueryClient } from '@/lib/query-client';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { getModel, clean, convert, coordinates, key } from '../record-validation';
@@ -95,4 +96,14 @@ test('lead phones accept international numbers and resource keys match the live 
     assert.ok(getModel(name).fields.length > 0);
   for (const name of ['lead_status_history', 'search_impression'])
     assert.ok(getModel(name).readonly);
+});
+
+test('server requests isolate query caches and cached authentication state', () => {
+  const first = getQueryClient();
+  const second = getQueryClient();
+  assert.notEqual(first, second);
+  first.setQueryData(['admin-session'], true);
+  assert.equal(second.getQueryData(['admin-session']), undefined);
+  first.clear();
+  second.clear();
 });

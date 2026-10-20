@@ -1,11 +1,13 @@
 import { QueryClient } from '@tanstack/react-query';
 
-// Singleton query client for use in mutation options and other non-component code.
-// In TanStack Start, the primary queryClient lives in the router context,
-// but mutations defined outside components need a reference too.
+// Reuse a cache in the browser; server requests must own independent caches.
+// A server singleton leaks query state and retains listeners from disposed routers.
 let queryClient: QueryClient | undefined;
 
 export function getQueryClient() {
+  if (typeof window === 'undefined') {
+    return new QueryClient({ defaultOptions: { queries: { staleTime: 60 * 1000 } } });
+  }
   if (!queryClient) {
     queryClient = new QueryClient({
       defaultOptions: {
