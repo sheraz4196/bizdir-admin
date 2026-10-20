@@ -1,6 +1,13 @@
-# Bizdir Admin
+# JustDial — directory and admin
 
-An authenticated TanStack Start workspace for the Bizdir PostgreSQL/PostGIS directory, with a live overview and searchable management screens. The `bizdir/` folder remains a separate reference client. This admin owns its Prisma schema, client, and server code.
+One application for the public directory and its admin workspace, with one repository, one database configuration, one server, and one deployment. Both use the client's orange-and-white JustDial palette and Inter typography.
+
+- Public directory: `/`
+- Search results: `/result`
+- Admin overview and sign-in: `/admin`
+- Management screens: `/admin/business`, `/admin/location`, `/admin/concept`, and the other sections in the admin navigation.
+
+Use the **Admin** link in the public header or footer. Use **View directory** in the admin header to return. All existing admin functionality remains available. Old `/dashboard` URLs redirect to `/admin`.
 
 ## Local setup
 
@@ -12,9 +19,13 @@ npm run db:generate
 npm run dev
 ```
 
-Open **http://localhost:3001**. Sign in with `ADMIN_PASSWORD` from `.env.local`. For a fresh checkout, copy `.env.example` to `.env.local`, set a strong administrator password and a persistent session signing secret, and configure the database URL.
+Open **http://localhost:3000** for the directory, or **http://localhost:3000/admin** for administration. Sign in with `ADMIN_PASSWORD` from `.env.local`. For a fresh checkout, copy `.env.example` to `.env.local`, set a strong administrator password and a persistent session signing secret, and configure the database URL.
 
-The server loads `.env.local`, `.env`, `bizdir/.env.local`, and `bizdir/.env`, without replacing existing environment variables. This checkout can therefore use the reference client's existing database URL. Environment files are ignored by Git, and database access stays on the server. Restart the server after changing environment values.
+The server loads `.env.local` and `.env` from this project, without replacing existing environment variables. Set `DATABASE_URL`, `ADMIN_PASSWORD`, and `ADMIN_SESSION_SECRET` there. Both public search and administration use the same Prisma/database singleton. The optional ignored `bizdir/` folder is reference material; it is not imported or required to run or deploy this application.
+
+Run `npm run dev` **from this repository's root**, not from the reference folder. Stop any old dev server already using port 3000 before restarting. The dev server uses a strict port so it reports a conflict instead of silently moving the app to another port.
+
+The public client's code lives in `src/client-app/`, admin UI in `src/features/admin/`, shared routes in `src/routes/`, and the shared database connection in `src/server/db.ts`. Environment files are ignored by Git; database credentials stay on the server. Restart the server after changing environment values.
 
 ## Directory management
 
@@ -57,18 +68,19 @@ npm run db:generate
 npm test
 npm run typecheck
 npm run db:check
+npm run check:client
 npm run test:db
 npm run build
 ```
 
-`db:check` reads directory counts. `test:db` creates isolated fixtures for every editable model, exercises updates/deletions and integrity rules, then rolls back the transaction. Test rows do not persist; PostgreSQL identity sequences can advance.
+`db:check` reads directory counts. `check:client` verifies the integrated public search and suggestion services against the shared database. `test:db` creates isolated fixtures for every editable model, exercises updates/deletions and integrity rules, then rolls back the transaction. Test rows do not persist; PostgreSQL identity sequences can advance.
 
-For HTTP verification, start the built app with `PORT=3011 npm start`, then run `npm run check:smoke` in another terminal. Set `ADMIN_TEST_URL` to test another local port. The smoke suite signs in, reads all 26 resources, checks filters and invalid requests, and signs out without saving database records. It reads the local password without printing it.
+For HTTP verification, start the built app with `npm start`, then run `npm run check:smoke` in another terminal. Both default to port 3000. Set `PORT` and `ADMIN_TEST_URL` together to verify on another local port. The smoke suite checks `/`, `/admin`, legacy redirects, signs in, reads all 26 resources, checks filters and invalid requests, and signs out without saving database records. It reads the local password without printing it.
 
 ## Access and deployment
 
-Authentication uses a shared administrator password, separate from public Bizdir user authentication. Signed HTTP-only same-site sessions expire after eight hours. Sign-in and mutations check the request origin, and sign-in attempts are limited in process.
+Authentication uses a shared administrator password for the `/admin` workspace. Signed HTTP-only same-site sessions expire after eight hours. Sign-in and mutations check the request origin, and sign-in attempts are limited in process.
 
-Deploy to Node.js with access to PostgreSQL/PostGIS. Configure HTTPS, a strong `ADMIN_PASSWORD`, and a persistent `ADMIN_SESSION_SECRET`. Multiple instances should use infrastructure-level rate limiting. Build with `npm run build` and serve with `npm start`; set `PORT` as appropriate for the host.
+Deploy this one application to Node.js with access to PostgreSQL/PostGIS. The public directory and `/admin` are served on the same origin; no second client/admin server is needed. Configure HTTPS, a strong `ADMIN_PASSWORD`, and a persistent `ADMIN_SESSION_SECRET`. Multiple instances should use infrastructure-level rate limiting. Build with `npm run build` and serve with `npm start`; set `PORT` as appropriate for the host.
 
 The starter has an older Zod adapter peer declaration; `--legacy-peer-deps` accommodates that existing dependency conflict during installation.
