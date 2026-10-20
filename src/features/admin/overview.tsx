@@ -6,6 +6,7 @@ import {
   Shapes,
   Inbox,
   ArrowUpRight,
+  Plus,
   ChevronRight,
   CheckCircle2,
   Clock3,
@@ -33,8 +34,8 @@ export function Overview() {
           params={{ resource: 'business' }}
           search={{} as never}
         >
-          <Search size={17} />
-          Browse places
+          <Plus size={17} />
+          Manage places
         </Link>
       </div>
       {q.error && (
@@ -169,11 +170,11 @@ export function Overview() {
                 title: 'Places to review',
                 count: d?.pendingPlaces,
                 resource: 'business',
-                desc: 'View pending business listings'
+                desc: 'Approve new business listings'
               },
               {
                 icon: Star,
-                title: 'Pending reviews',
+                title: 'Reviews to moderate',
                 count: d?.pendingReviews,
                 resource: 'review',
                 desc: 'Keep your community trusted'

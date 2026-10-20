@@ -19,8 +19,20 @@ import { session, signIn, signOut } from './api';
 import { models } from './models';
 import './admin.css';
 const groups = [
-  { title: 'DIRECTORY', names: ['business', 'location', 'concept', 'attribute'] },
-  { title: 'COMMUNITY', names: ['app_user', 'review', 'lead'] },
+  { title: 'WORKSPACE', names: ['business', 'location', 'concept', 'attribute'] },
+  { title: 'COMMUNITY', names: ['app_user', 'review', 'lead', 'creator'] },
+  { title: 'COMMERCE', names: ['business_subscription', 'payout'] },
+  {
+    title: 'PLACE DETAILS',
+    names: [
+      'business_media',
+      'business_hours',
+      'business_concept',
+      'business_attribute',
+      'concept_alias',
+      'location_alias'
+    ]
+  },
   { title: 'INSIGHTS', names: ['search_log', 'click_log'] }
 ];
 const icons: Record<string, typeof Building2> = {
