@@ -58,7 +58,7 @@ export type attribute = Prisma.attributeModel
 export type business = Prisma.businessModel
 /**
  * Model business_attribute
- * 
+ * This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
  */
 export type business_attribute = Prisma.business_attributeModel
 /**
@@ -104,16 +104,19 @@ export type creator = Prisma.creatorModel
 /**
  * Model lead
  * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
  */
 export type lead = Prisma.leadModel
 /**
  * Model location
  * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
  */
 export type location = Prisma.locationModel
 /**
  * Model location_alias
  * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
  */
 export type location_alias = Prisma.location_aliasModel
 /**
@@ -136,3 +139,43 @@ export type search_log = Prisma.search_logModel
  * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
  */
 export type spatial_ref_sys = Prisma.spatial_ref_sysModel
+/**
+ * Model attribute_alias
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type attribute_alias = Prisma.attribute_aliasModel
+/**
+ * Model attribute_option
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type attribute_option = Prisma.attribute_optionModel
+/**
+ * Model business_alias
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type business_alias = Prisma.business_aliasModel
+/**
+ * Model business_claim
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type business_claim = Prisma.business_claimModel
+/**
+ * Model business_closure
+ * 
+ */
+export type business_closure = Prisma.business_closureModel
+/**
+ * Model concept_attribute
+ * 
+ */
+export type concept_attribute = Prisma.concept_attributeModel
+/**
+ * Model lead_status_history
+ * 
+ */
+export type lead_status_history = Prisma.lead_status_historyModel
+/**
+ * Model search_impression
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ */
+export type search_impression = Prisma.search_impressionModel

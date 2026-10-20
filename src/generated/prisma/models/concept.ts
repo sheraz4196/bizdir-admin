@@ -47,6 +47,7 @@ export type ConceptMinAggregateOutputType = {
   sort_order: number | null
   is_active: boolean | null
   created_at: Date | null
+  name_local: string | null
 }
 
 export type ConceptMaxAggregateOutputType = {
@@ -58,6 +59,7 @@ export type ConceptMaxAggregateOutputType = {
   sort_order: number | null
   is_active: boolean | null
   created_at: Date | null
+  name_local: string | null
 }
 
 export type ConceptCountAggregateOutputType = {
@@ -69,6 +71,7 @@ export type ConceptCountAggregateOutputType = {
   sort_order: number
   is_active: number
   created_at: number
+  name_local: number
   _all: number
 }
 
@@ -94,6 +97,7 @@ export type ConceptMinAggregateInputType = {
   sort_order?: true
   is_active?: true
   created_at?: true
+  name_local?: true
 }
 
 export type ConceptMaxAggregateInputType = {
@@ -105,6 +109,7 @@ export type ConceptMaxAggregateInputType = {
   sort_order?: true
   is_active?: true
   created_at?: true
+  name_local?: true
 }
 
 export type ConceptCountAggregateInputType = {
@@ -116,6 +121,7 @@ export type ConceptCountAggregateInputType = {
   sort_order?: true
   is_active?: true
   created_at?: true
+  name_local?: true
   _all?: true
 }
 
@@ -214,6 +220,7 @@ export type ConceptGroupByOutputType = {
   sort_order: number
   is_active: boolean
   created_at: Date
+  name_local: string | null
   _count: ConceptCountAggregateOutputType | null
   _avg: ConceptAvgAggregateOutputType | null
   _sum: ConceptSumAggregateOutputType | null
@@ -248,10 +255,12 @@ export type conceptWhereInput = {
   sort_order?: Prisma.IntFilter<"concept"> | number
   is_active?: Prisma.BoolFilter<"concept"> | boolean
   created_at?: Prisma.DateTimeFilter<"concept"> | Date | string
+  name_local?: Prisma.StringNullableFilter<"concept"> | string | null
   business_concept?: Prisma.Business_conceptListRelationFilter
   concept?: Prisma.XOR<Prisma.ConceptNullableScalarRelationFilter, Prisma.conceptWhereInput> | null
   other_concept?: Prisma.ConceptListRelationFilter
   concept_alias?: Prisma.Concept_aliasListRelationFilter
+  concept_attribute?: Prisma.Concept_attributeListRelationFilter
 }
 
 export type conceptOrderByWithRelationInput = {
@@ -263,10 +272,12 @@ export type conceptOrderByWithRelationInput = {
   sort_order?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  name_local?: Prisma.SortOrderInput | Prisma.SortOrder
   business_concept?: Prisma.business_conceptOrderByRelationAggregateInput
   concept?: Prisma.conceptOrderByWithRelationInput
   other_concept?: Prisma.conceptOrderByRelationAggregateInput
   concept_alias?: Prisma.concept_aliasOrderByRelationAggregateInput
+  concept_attribute?: Prisma.concept_attributeOrderByRelationAggregateInput
 }
 
 export type conceptWhereUniqueInput = Prisma.AtLeast<{
@@ -281,10 +292,12 @@ export type conceptWhereUniqueInput = Prisma.AtLeast<{
   sort_order?: Prisma.IntFilter<"concept"> | number
   is_active?: Prisma.BoolFilter<"concept"> | boolean
   created_at?: Prisma.DateTimeFilter<"concept"> | Date | string
+  name_local?: Prisma.StringNullableFilter<"concept"> | string | null
   business_concept?: Prisma.Business_conceptListRelationFilter
   concept?: Prisma.XOR<Prisma.ConceptNullableScalarRelationFilter, Prisma.conceptWhereInput> | null
   other_concept?: Prisma.ConceptListRelationFilter
   concept_alias?: Prisma.Concept_aliasListRelationFilter
+  concept_attribute?: Prisma.Concept_attributeListRelationFilter
 }, "id" | "slug">
 
 export type conceptOrderByWithAggregationInput = {
@@ -296,6 +309,7 @@ export type conceptOrderByWithAggregationInput = {
   sort_order?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  name_local?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.conceptCountOrderByAggregateInput
   _avg?: Prisma.conceptAvgOrderByAggregateInput
   _max?: Prisma.conceptMaxOrderByAggregateInput
@@ -315,6 +329,7 @@ export type conceptScalarWhereWithAggregatesInput = {
   sort_order?: Prisma.IntWithAggregatesFilter<"concept"> | number
   is_active?: Prisma.BoolWithAggregatesFilter<"concept"> | boolean
   created_at?: Prisma.DateTimeWithAggregatesFilter<"concept"> | Date | string
+  name_local?: Prisma.StringNullableWithAggregatesFilter<"concept"> | string | null
 }
 
 export type conceptCreateInput = {
@@ -324,10 +339,12 @@ export type conceptCreateInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
   business_concept?: Prisma.business_conceptCreateNestedManyWithoutConceptInput
   concept?: Prisma.conceptCreateNestedOneWithoutOther_conceptInput
   other_concept?: Prisma.conceptCreateNestedManyWithoutConceptInput
   concept_alias?: Prisma.concept_aliasCreateNestedManyWithoutConceptInput
+  concept_attribute?: Prisma.concept_attributeCreateNestedManyWithoutConceptInput
 }
 
 export type conceptUncheckedCreateInput = {
@@ -339,9 +356,11 @@ export type conceptUncheckedCreateInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
   business_concept?: Prisma.business_conceptUncheckedCreateNestedManyWithoutConceptInput
   other_concept?: Prisma.conceptUncheckedCreateNestedManyWithoutConceptInput
   concept_alias?: Prisma.concept_aliasUncheckedCreateNestedManyWithoutConceptInput
+  concept_attribute?: Prisma.concept_attributeUncheckedCreateNestedManyWithoutConceptInput
 }
 
 export type conceptUpdateInput = {
@@ -351,10 +370,12 @@ export type conceptUpdateInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business_concept?: Prisma.business_conceptUpdateManyWithoutConceptNestedInput
   concept?: Prisma.conceptUpdateOneWithoutOther_conceptNestedInput
   other_concept?: Prisma.conceptUpdateManyWithoutConceptNestedInput
   concept_alias?: Prisma.concept_aliasUpdateManyWithoutConceptNestedInput
+  concept_attribute?: Prisma.concept_attributeUpdateManyWithoutConceptNestedInput
 }
 
 export type conceptUncheckedUpdateInput = {
@@ -366,9 +387,11 @@ export type conceptUncheckedUpdateInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business_concept?: Prisma.business_conceptUncheckedUpdateManyWithoutConceptNestedInput
   other_concept?: Prisma.conceptUncheckedUpdateManyWithoutConceptNestedInput
   concept_alias?: Prisma.concept_aliasUncheckedUpdateManyWithoutConceptNestedInput
+  concept_attribute?: Prisma.concept_attributeUncheckedUpdateManyWithoutConceptNestedInput
 }
 
 export type conceptCreateManyInput = {
@@ -380,6 +403,7 @@ export type conceptCreateManyInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
 }
 
 export type conceptUpdateManyMutationInput = {
@@ -389,6 +413,7 @@ export type conceptUpdateManyMutationInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type conceptUncheckedUpdateManyInput = {
@@ -400,6 +425,7 @@ export type conceptUncheckedUpdateManyInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ConceptScalarRelationFilter = {
@@ -431,6 +457,7 @@ export type conceptCountOrderByAggregateInput = {
   sort_order?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  name_local?: Prisma.SortOrder
 }
 
 export type conceptAvgOrderByAggregateInput = {
@@ -448,6 +475,7 @@ export type conceptMaxOrderByAggregateInput = {
   sort_order?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  name_local?: Prisma.SortOrder
 }
 
 export type conceptMinOrderByAggregateInput = {
@@ -459,6 +487,7 @@ export type conceptMinOrderByAggregateInput = {
   sort_order?: Prisma.SortOrder
   is_active?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+  name_local?: Prisma.SortOrder
 }
 
 export type conceptSumOrderByAggregateInput = {
@@ -553,6 +582,20 @@ export type conceptUpdateOneRequiredWithoutConcept_aliasNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.conceptUpdateToOneWithWhereWithoutConcept_aliasInput, Prisma.conceptUpdateWithoutConcept_aliasInput>, Prisma.conceptUncheckedUpdateWithoutConcept_aliasInput>
 }
 
+export type conceptCreateNestedOneWithoutConcept_attributeInput = {
+  create?: Prisma.XOR<Prisma.conceptCreateWithoutConcept_attributeInput, Prisma.conceptUncheckedCreateWithoutConcept_attributeInput>
+  connectOrCreate?: Prisma.conceptCreateOrConnectWithoutConcept_attributeInput
+  connect?: Prisma.conceptWhereUniqueInput
+}
+
+export type conceptUpdateOneRequiredWithoutConcept_attributeNestedInput = {
+  create?: Prisma.XOR<Prisma.conceptCreateWithoutConcept_attributeInput, Prisma.conceptUncheckedCreateWithoutConcept_attributeInput>
+  connectOrCreate?: Prisma.conceptCreateOrConnectWithoutConcept_attributeInput
+  upsert?: Prisma.conceptUpsertWithoutConcept_attributeInput
+  connect?: Prisma.conceptWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.conceptUpdateToOneWithWhereWithoutConcept_attributeInput, Prisma.conceptUpdateWithoutConcept_attributeInput>, Prisma.conceptUncheckedUpdateWithoutConcept_attributeInput>
+}
+
 export type conceptCreateWithoutBusiness_conceptInput = {
   slug: string
   name: string
@@ -560,9 +603,11 @@ export type conceptCreateWithoutBusiness_conceptInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
   concept?: Prisma.conceptCreateNestedOneWithoutOther_conceptInput
   other_concept?: Prisma.conceptCreateNestedManyWithoutConceptInput
   concept_alias?: Prisma.concept_aliasCreateNestedManyWithoutConceptInput
+  concept_attribute?: Prisma.concept_attributeCreateNestedManyWithoutConceptInput
 }
 
 export type conceptUncheckedCreateWithoutBusiness_conceptInput = {
@@ -574,8 +619,10 @@ export type conceptUncheckedCreateWithoutBusiness_conceptInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
   other_concept?: Prisma.conceptUncheckedCreateNestedManyWithoutConceptInput
   concept_alias?: Prisma.concept_aliasUncheckedCreateNestedManyWithoutConceptInput
+  concept_attribute?: Prisma.concept_attributeUncheckedCreateNestedManyWithoutConceptInput
 }
 
 export type conceptCreateOrConnectWithoutBusiness_conceptInput = {
@@ -601,9 +648,11 @@ export type conceptUpdateWithoutBusiness_conceptInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   concept?: Prisma.conceptUpdateOneWithoutOther_conceptNestedInput
   other_concept?: Prisma.conceptUpdateManyWithoutConceptNestedInput
   concept_alias?: Prisma.concept_aliasUpdateManyWithoutConceptNestedInput
+  concept_attribute?: Prisma.concept_attributeUpdateManyWithoutConceptNestedInput
 }
 
 export type conceptUncheckedUpdateWithoutBusiness_conceptInput = {
@@ -615,8 +664,10 @@ export type conceptUncheckedUpdateWithoutBusiness_conceptInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   other_concept?: Prisma.conceptUncheckedUpdateManyWithoutConceptNestedInput
   concept_alias?: Prisma.concept_aliasUncheckedUpdateManyWithoutConceptNestedInput
+  concept_attribute?: Prisma.concept_attributeUncheckedUpdateManyWithoutConceptNestedInput
 }
 
 export type conceptCreateWithoutOther_conceptInput = {
@@ -626,9 +677,11 @@ export type conceptCreateWithoutOther_conceptInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
   business_concept?: Prisma.business_conceptCreateNestedManyWithoutConceptInput
   concept?: Prisma.conceptCreateNestedOneWithoutOther_conceptInput
   concept_alias?: Prisma.concept_aliasCreateNestedManyWithoutConceptInput
+  concept_attribute?: Prisma.concept_attributeCreateNestedManyWithoutConceptInput
 }
 
 export type conceptUncheckedCreateWithoutOther_conceptInput = {
@@ -640,8 +693,10 @@ export type conceptUncheckedCreateWithoutOther_conceptInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
   business_concept?: Prisma.business_conceptUncheckedCreateNestedManyWithoutConceptInput
   concept_alias?: Prisma.concept_aliasUncheckedCreateNestedManyWithoutConceptInput
+  concept_attribute?: Prisma.concept_attributeUncheckedCreateNestedManyWithoutConceptInput
 }
 
 export type conceptCreateOrConnectWithoutOther_conceptInput = {
@@ -656,9 +711,11 @@ export type conceptCreateWithoutConceptInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
   business_concept?: Prisma.business_conceptCreateNestedManyWithoutConceptInput
   other_concept?: Prisma.conceptCreateNestedManyWithoutConceptInput
   concept_alias?: Prisma.concept_aliasCreateNestedManyWithoutConceptInput
+  concept_attribute?: Prisma.concept_attributeCreateNestedManyWithoutConceptInput
 }
 
 export type conceptUncheckedCreateWithoutConceptInput = {
@@ -669,9 +726,11 @@ export type conceptUncheckedCreateWithoutConceptInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
   business_concept?: Prisma.business_conceptUncheckedCreateNestedManyWithoutConceptInput
   other_concept?: Prisma.conceptUncheckedCreateNestedManyWithoutConceptInput
   concept_alias?: Prisma.concept_aliasUncheckedCreateNestedManyWithoutConceptInput
+  concept_attribute?: Prisma.concept_attributeUncheckedCreateNestedManyWithoutConceptInput
 }
 
 export type conceptCreateOrConnectWithoutConceptInput = {
@@ -702,9 +761,11 @@ export type conceptUpdateWithoutOther_conceptInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business_concept?: Prisma.business_conceptUpdateManyWithoutConceptNestedInput
   concept?: Prisma.conceptUpdateOneWithoutOther_conceptNestedInput
   concept_alias?: Prisma.concept_aliasUpdateManyWithoutConceptNestedInput
+  concept_attribute?: Prisma.concept_attributeUpdateManyWithoutConceptNestedInput
 }
 
 export type conceptUncheckedUpdateWithoutOther_conceptInput = {
@@ -716,8 +777,10 @@ export type conceptUncheckedUpdateWithoutOther_conceptInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business_concept?: Prisma.business_conceptUncheckedUpdateManyWithoutConceptNestedInput
   concept_alias?: Prisma.concept_aliasUncheckedUpdateManyWithoutConceptNestedInput
+  concept_attribute?: Prisma.concept_attributeUncheckedUpdateManyWithoutConceptNestedInput
 }
 
 export type conceptUpsertWithWhereUniqueWithoutConceptInput = {
@@ -748,6 +811,7 @@ export type conceptScalarWhereInput = {
   sort_order?: Prisma.IntFilter<"concept"> | number
   is_active?: Prisma.BoolFilter<"concept"> | boolean
   created_at?: Prisma.DateTimeFilter<"concept"> | Date | string
+  name_local?: Prisma.StringNullableFilter<"concept"> | string | null
 }
 
 export type conceptCreateWithoutConcept_aliasInput = {
@@ -757,9 +821,11 @@ export type conceptCreateWithoutConcept_aliasInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
   business_concept?: Prisma.business_conceptCreateNestedManyWithoutConceptInput
   concept?: Prisma.conceptCreateNestedOneWithoutOther_conceptInput
   other_concept?: Prisma.conceptCreateNestedManyWithoutConceptInput
+  concept_attribute?: Prisma.concept_attributeCreateNestedManyWithoutConceptInput
 }
 
 export type conceptUncheckedCreateWithoutConcept_aliasInput = {
@@ -771,8 +837,10 @@ export type conceptUncheckedCreateWithoutConcept_aliasInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
   business_concept?: Prisma.business_conceptUncheckedCreateNestedManyWithoutConceptInput
   other_concept?: Prisma.conceptUncheckedCreateNestedManyWithoutConceptInput
+  concept_attribute?: Prisma.concept_attributeUncheckedCreateNestedManyWithoutConceptInput
 }
 
 export type conceptCreateOrConnectWithoutConcept_aliasInput = {
@@ -798,9 +866,11 @@ export type conceptUpdateWithoutConcept_aliasInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business_concept?: Prisma.business_conceptUpdateManyWithoutConceptNestedInput
   concept?: Prisma.conceptUpdateOneWithoutOther_conceptNestedInput
   other_concept?: Prisma.conceptUpdateManyWithoutConceptNestedInput
+  concept_attribute?: Prisma.concept_attributeUpdateManyWithoutConceptNestedInput
 }
 
 export type conceptUncheckedUpdateWithoutConcept_aliasInput = {
@@ -812,8 +882,84 @@ export type conceptUncheckedUpdateWithoutConcept_aliasInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business_concept?: Prisma.business_conceptUncheckedUpdateManyWithoutConceptNestedInput
   other_concept?: Prisma.conceptUncheckedUpdateManyWithoutConceptNestedInput
+  concept_attribute?: Prisma.concept_attributeUncheckedUpdateManyWithoutConceptNestedInput
+}
+
+export type conceptCreateWithoutConcept_attributeInput = {
+  slug: string
+  name: string
+  type?: string
+  sort_order?: number
+  is_active?: boolean
+  created_at?: Date | string
+  name_local?: string | null
+  business_concept?: Prisma.business_conceptCreateNestedManyWithoutConceptInput
+  concept?: Prisma.conceptCreateNestedOneWithoutOther_conceptInput
+  other_concept?: Prisma.conceptCreateNestedManyWithoutConceptInput
+  concept_alias?: Prisma.concept_aliasCreateNestedManyWithoutConceptInput
+}
+
+export type conceptUncheckedCreateWithoutConcept_attributeInput = {
+  id?: number
+  slug: string
+  name: string
+  type?: string
+  parent_id?: number | null
+  sort_order?: number
+  is_active?: boolean
+  created_at?: Date | string
+  name_local?: string | null
+  business_concept?: Prisma.business_conceptUncheckedCreateNestedManyWithoutConceptInput
+  other_concept?: Prisma.conceptUncheckedCreateNestedManyWithoutConceptInput
+  concept_alias?: Prisma.concept_aliasUncheckedCreateNestedManyWithoutConceptInput
+}
+
+export type conceptCreateOrConnectWithoutConcept_attributeInput = {
+  where: Prisma.conceptWhereUniqueInput
+  create: Prisma.XOR<Prisma.conceptCreateWithoutConcept_attributeInput, Prisma.conceptUncheckedCreateWithoutConcept_attributeInput>
+}
+
+export type conceptUpsertWithoutConcept_attributeInput = {
+  update: Prisma.XOR<Prisma.conceptUpdateWithoutConcept_attributeInput, Prisma.conceptUncheckedUpdateWithoutConcept_attributeInput>
+  create: Prisma.XOR<Prisma.conceptCreateWithoutConcept_attributeInput, Prisma.conceptUncheckedCreateWithoutConcept_attributeInput>
+  where?: Prisma.conceptWhereInput
+}
+
+export type conceptUpdateToOneWithWhereWithoutConcept_attributeInput = {
+  where?: Prisma.conceptWhereInput
+  data: Prisma.XOR<Prisma.conceptUpdateWithoutConcept_attributeInput, Prisma.conceptUncheckedUpdateWithoutConcept_attributeInput>
+}
+
+export type conceptUpdateWithoutConcept_attributeInput = {
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  business_concept?: Prisma.business_conceptUpdateManyWithoutConceptNestedInput
+  concept?: Prisma.conceptUpdateOneWithoutOther_conceptNestedInput
+  other_concept?: Prisma.conceptUpdateManyWithoutConceptNestedInput
+  concept_alias?: Prisma.concept_aliasUpdateManyWithoutConceptNestedInput
+}
+
+export type conceptUncheckedUpdateWithoutConcept_attributeInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  parent_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  business_concept?: Prisma.business_conceptUncheckedUpdateManyWithoutConceptNestedInput
+  other_concept?: Prisma.conceptUncheckedUpdateManyWithoutConceptNestedInput
+  concept_alias?: Prisma.concept_aliasUncheckedUpdateManyWithoutConceptNestedInput
 }
 
 export type conceptCreateManyConceptInput = {
@@ -824,6 +970,7 @@ export type conceptCreateManyConceptInput = {
   sort_order?: number
   is_active?: boolean
   created_at?: Date | string
+  name_local?: string | null
 }
 
 export type conceptUpdateWithoutConceptInput = {
@@ -833,9 +980,11 @@ export type conceptUpdateWithoutConceptInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business_concept?: Prisma.business_conceptUpdateManyWithoutConceptNestedInput
   other_concept?: Prisma.conceptUpdateManyWithoutConceptNestedInput
   concept_alias?: Prisma.concept_aliasUpdateManyWithoutConceptNestedInput
+  concept_attribute?: Prisma.concept_attributeUpdateManyWithoutConceptNestedInput
 }
 
 export type conceptUncheckedUpdateWithoutConceptInput = {
@@ -846,9 +995,11 @@ export type conceptUncheckedUpdateWithoutConceptInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business_concept?: Prisma.business_conceptUncheckedUpdateManyWithoutConceptNestedInput
   other_concept?: Prisma.conceptUncheckedUpdateManyWithoutConceptNestedInput
   concept_alias?: Prisma.concept_aliasUncheckedUpdateManyWithoutConceptNestedInput
+  concept_attribute?: Prisma.concept_attributeUncheckedUpdateManyWithoutConceptNestedInput
 }
 
 export type conceptUncheckedUpdateManyWithoutConceptInput = {
@@ -859,6 +1010,7 @@ export type conceptUncheckedUpdateManyWithoutConceptInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   is_active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name_local?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -870,12 +1022,14 @@ export type ConceptCountOutputType = {
   business_concept: number
   other_concept: number
   concept_alias: number
+  concept_attribute: number
 }
 
 export type ConceptCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   business_concept?: boolean | ConceptCountOutputTypeCountBusiness_conceptArgs
   other_concept?: boolean | ConceptCountOutputTypeCountOther_conceptArgs
   concept_alias?: boolean | ConceptCountOutputTypeCountConcept_aliasArgs
+  concept_attribute?: boolean | ConceptCountOutputTypeCountConcept_attributeArgs
 }
 
 /**
@@ -909,6 +1063,13 @@ export type ConceptCountOutputTypeCountConcept_aliasArgs<ExtArgs extends runtime
   where?: Prisma.concept_aliasWhereInput
 }
 
+/**
+ * ConceptCountOutputType without action
+ */
+export type ConceptCountOutputTypeCountConcept_attributeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.concept_attributeWhereInput
+}
+
 
 export type conceptSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -919,10 +1080,12 @@ export type conceptSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   sort_order?: boolean
   is_active?: boolean
   created_at?: boolean
+  name_local?: boolean
   business_concept?: boolean | Prisma.concept$business_conceptArgs<ExtArgs>
   concept?: boolean | Prisma.concept$conceptArgs<ExtArgs>
   other_concept?: boolean | Prisma.concept$other_conceptArgs<ExtArgs>
   concept_alias?: boolean | Prisma.concept$concept_aliasArgs<ExtArgs>
+  concept_attribute?: boolean | Prisma.concept$concept_attributeArgs<ExtArgs>
   _count?: boolean | Prisma.ConceptCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["concept"]>
 
@@ -935,6 +1098,7 @@ export type conceptSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   sort_order?: boolean
   is_active?: boolean
   created_at?: boolean
+  name_local?: boolean
   concept?: boolean | Prisma.concept$conceptArgs<ExtArgs>
 }, ExtArgs["result"]["concept"]>
 
@@ -947,6 +1111,7 @@ export type conceptSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   sort_order?: boolean
   is_active?: boolean
   created_at?: boolean
+  name_local?: boolean
   concept?: boolean | Prisma.concept$conceptArgs<ExtArgs>
 }, ExtArgs["result"]["concept"]>
 
@@ -959,14 +1124,16 @@ export type conceptSelectScalar = {
   sort_order?: boolean
   is_active?: boolean
   created_at?: boolean
+  name_local?: boolean
 }
 
-export type conceptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "type" | "parent_id" | "sort_order" | "is_active" | "created_at", ExtArgs["result"]["concept"]>
+export type conceptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "type" | "parent_id" | "sort_order" | "is_active" | "created_at" | "name_local", ExtArgs["result"]["concept"]>
 export type conceptInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   business_concept?: boolean | Prisma.concept$business_conceptArgs<ExtArgs>
   concept?: boolean | Prisma.concept$conceptArgs<ExtArgs>
   other_concept?: boolean | Prisma.concept$other_conceptArgs<ExtArgs>
   concept_alias?: boolean | Prisma.concept$concept_aliasArgs<ExtArgs>
+  concept_attribute?: boolean | Prisma.concept$concept_attributeArgs<ExtArgs>
   _count?: boolean | Prisma.ConceptCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type conceptIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -983,6 +1150,7 @@ export type $conceptPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     concept: Prisma.$conceptPayload<ExtArgs> | null
     other_concept: Prisma.$conceptPayload<ExtArgs>[]
     concept_alias: Prisma.$concept_aliasPayload<ExtArgs>[]
+    concept_attribute: Prisma.$concept_attributePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -993,6 +1161,7 @@ export type $conceptPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     sort_order: number
     is_active: boolean
     created_at: Date
+    name_local: string | null
   }, ExtArgs["result"]["concept"]>
   composites: {}
 }
@@ -1391,6 +1560,7 @@ export interface Prisma__conceptClient<T, Null = never, ExtArgs extends runtime.
   concept<T extends Prisma.concept$conceptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.concept$conceptArgs<ExtArgs>>): Prisma.Prisma__conceptClient<runtime.Types.Result.GetResult<Prisma.$conceptPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   other_concept<T extends Prisma.concept$other_conceptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.concept$other_conceptArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$conceptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   concept_alias<T extends Prisma.concept$concept_aliasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.concept$concept_aliasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$concept_aliasPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  concept_attribute<T extends Prisma.concept$concept_attributeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.concept$concept_attributeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$concept_attributePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1428,6 +1598,7 @@ export interface conceptFieldRefs {
   readonly sort_order: Prisma.FieldRef<"concept", 'Int'>
   readonly is_active: Prisma.FieldRef<"concept", 'Boolean'>
   readonly created_at: Prisma.FieldRef<"concept", 'DateTime'>
+  readonly name_local: Prisma.FieldRef<"concept", 'String'>
 }
     
 
@@ -1917,6 +2088,30 @@ export type concept$concept_aliasArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.Concept_aliasScalarFieldEnum | Prisma.Concept_aliasScalarFieldEnum[]
+}
+
+/**
+ * concept.concept_attribute
+ */
+export type concept$concept_attributeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the concept_attribute
+   */
+  select?: Prisma.concept_attributeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the concept_attribute
+   */
+  omit?: Prisma.concept_attributeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.concept_attributeInclude<ExtArgs> | null
+  where?: Prisma.concept_attributeWhereInput
+  orderBy?: Prisma.concept_attributeOrderByWithRelationInput | Prisma.concept_attributeOrderByWithRelationInput[]
+  cursor?: Prisma.concept_attributeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Concept_attributeScalarFieldEnum | Prisma.Concept_attributeScalarFieldEnum[]
 }
 
 /**
