@@ -1,5 +1,5 @@
 {
-  "name": "bizdir-admin",
+  "name": "justdial",
   "version": "1.0.0",
   "private": true,
   "author": {
@@ -21,7 +21,8 @@
     "check:smoke": "node scripts/smoke-admin.mjs",
     "admin:generate": "node scripts/generate-admin-models.mjs && oxfmt --write src/features/admin/models.ts",
     "test": "node --import tsx src/server/__tests__/record-validation.test.ts",
-    "test:db": "node --import tsx scripts/test-admin-records.ts"
+    "test:db": "node --import tsx scripts/test-admin-records.ts",
+    "check:client": "node --import tsx scripts/check-client-search.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

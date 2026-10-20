@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { toJSON, fromCrossJSON } from 'seroval';
 import { config } from 'dotenv';
 config({ path: '.env.local', quiet: true });
-const base = process.env.ADMIN_TEST_URL || 'http://localhost:3011';
+const base = process.env.ADMIN_TEST_URL || 'http://localhost:3000';
 let source = '';
 for (const file of await readdir('.output/server/_ssr')) {
   if (file.startsWith('api-')) {
@@ -37,6 +37,24 @@ async function call(name, data, post = false, origin = base) {
     value = raw;
   }
   return { res, raw, value };
+}
+const home = await fetch(base + '/');
+assert.equal(home.status, 200);
+assert((await home.text()).includes('Find the best'), 'The public homepage must render at /.');
+const admin = await fetch(base + '/admin', { redirect: 'manual' });
+assert.equal(admin.status, 200);
+assert(
+  (await admin.text()).includes('JustDial Admin'),
+  'Admin must render in the same application at /admin.'
+);
+for (const [from, to] of [
+  ['/dashboard', '/admin'],
+  ['/dashboard/overview', '/admin'],
+  ['/dashboard/business', '/admin/business']
+]) {
+  const response = await fetch(base + from, { redirect: 'manual' });
+  assert.equal(response.status, 307);
+  assert.equal(new URL(response.headers.get('location'), base).pathname, to);
 }
 const denied = await call('readData', { model: 'business', page: 0, search: '', status: '' });
 assert(
@@ -160,5 +178,5 @@ cookie = '';
 const anonymous = await call('session');
 assert.equal(anonymous.value.result, false, 'Anonymous session must be false.');
 console.log(
-  'PASS: login, 26 authenticated resource lists, overview, anonymous access, origin checks, read-only logs, required fields, and logout. No database writes performed.'
+  'PASS: public homepage, /admin, legacy redirects, login, 26 authenticated resource lists, overview, anonymous access, origin checks, read-only logs, required fields, and logout. No database writes performed.'
 );
