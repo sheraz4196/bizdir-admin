@@ -31,3 +31,34 @@ export const overview = createServerFn({ method: 'GET' }).handler(async () => {
   const { dashboard } = await import('@/server/admin');
   return dashboard();
 });
+export const lookup = createServerFn({ method: 'GET' })
+  .inputValidator(
+    z.object({
+      model: z.string(),
+      search: z.string().max(100).default(''),
+      id: z.string().optional(),
+      field: z.string().optional()
+    })
+  )
+  .handler(async ({ data }) => {
+    const { getLookup } = await import('@/server/admin');
+    return getLookup(data);
+  });
+export const saveRecord = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      model: z.string(),
+      values: z.record(z.string(), z.unknown()),
+      original: z.record(z.string(), z.unknown()).optional()
+    })
+  )
+  .handler(async ({ data }) => {
+    const { save } = await import('@/server/admin');
+    return save(data);
+  });
+export const deleteRecord = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ model: z.string(), original: z.record(z.string(), z.unknown()) }))
+  .handler(async ({ data }) => {
+    const { remove } = await import('@/server/admin');
+    return remove(data);
+  });

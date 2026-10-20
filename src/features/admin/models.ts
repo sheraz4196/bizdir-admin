@@ -73,7 +73,7 @@ export const models: Model[] = [
       }
     ],
     keys: ['id'],
-    readonly: true
+    readonly: false
   },
   {
     name: 'attribute',
@@ -110,7 +110,7 @@ export const models: Model[] = [
       }
     ],
     keys: ['id'],
-    readonly: true
+    readonly: false
   },
   {
     name: 'business',
@@ -292,7 +292,216 @@ export const models: Model[] = [
       }
     ],
     keys: ['id'],
-    readonly: true
+    readonly: false
+  },
+  {
+    name: 'business_attribute',
+    label: 'Place attributes',
+    fields: [
+      {
+        name: 'business_id',
+        type: 'BigInt',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'attribute_id',
+        type: 'Int',
+        required: true,
+        generated: false,
+        primary: false
+      }
+    ],
+    keys: ['business_id', 'attribute_id'],
+    readonly: false
+  },
+  {
+    name: 'business_concept',
+    label: 'Place categories',
+    fields: [
+      {
+        name: 'business_id',
+        type: 'BigInt',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'concept_id',
+        type: 'Int',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'is_primary',
+        type: 'Boolean',
+        required: true,
+        generated: false,
+        primary: false,
+        default: false
+      }
+    ],
+    keys: ['business_id', 'concept_id'],
+    readonly: false
+  },
+  {
+    name: 'business_hours',
+    label: 'Opening hours',
+    fields: [
+      {
+        name: 'business_id',
+        type: 'BigInt',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'weekday',
+        type: 'Int',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'open_time',
+        type: 'DateTime',
+        required: true,
+        generated: false,
+        primary: false,
+        timeOnly: true
+      },
+      {
+        name: 'close_time',
+        type: 'DateTime',
+        required: true,
+        generated: false,
+        primary: false,
+        timeOnly: true
+      }
+    ],
+    keys: ['business_id', 'weekday', 'open_time'],
+    readonly: false
+  },
+  {
+    name: 'business_media',
+    label: 'Place media',
+    fields: [
+      {
+        name: 'id',
+        type: 'BigInt',
+        required: true,
+        generated: true,
+        primary: true
+      },
+      {
+        name: 'business_id',
+        type: 'BigInt',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'kind',
+        type: 'String',
+        required: true,
+        generated: false,
+        primary: false,
+        default: 'photo'
+      },
+      {
+        name: 'url',
+        type: 'String',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'sort_order',
+        type: 'Int',
+        required: true,
+        generated: false,
+        primary: false,
+        default: 0
+      },
+      {
+        name: 'created_at',
+        type: 'DateTime',
+        required: true,
+        generated: true,
+        primary: false
+      }
+    ],
+    keys: ['id'],
+    readonly: false
+  },
+  {
+    name: 'business_subscription',
+    label: 'Subscriptions',
+    fields: [
+      {
+        name: 'id',
+        type: 'BigInt',
+        required: true,
+        generated: true,
+        primary: true
+      },
+      {
+        name: 'business_id',
+        type: 'BigInt',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'plan',
+        type: 'String',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'starts_on',
+        type: 'DateTime',
+        required: true,
+        generated: false,
+        primary: false,
+        dateOnly: true
+      },
+      {
+        name: 'ends_on',
+        type: 'DateTime',
+        required: true,
+        generated: false,
+        primary: false,
+        dateOnly: true
+      },
+      {
+        name: 'amount_paid',
+        type: 'Decimal',
+        required: true,
+        generated: false,
+        primary: false,
+        default: 0
+      },
+      {
+        name: 'payment_ref',
+        type: 'String',
+        required: false,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'created_at',
+        type: 'DateTime',
+        required: true,
+        generated: true,
+        primary: false
+      }
+    ],
+    keys: ['id'],
+    readonly: false
   },
   {
     name: 'click_log',
@@ -416,7 +625,131 @@ export const models: Model[] = [
       }
     ],
     keys: ['id'],
-    readonly: true
+    readonly: false
+  },
+  {
+    name: 'concept_alias',
+    label: 'Category aliases',
+    fields: [
+      {
+        name: 'id',
+        type: 'Int',
+        required: true,
+        generated: true,
+        primary: true
+      },
+      {
+        name: 'concept_id',
+        type: 'Int',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'text',
+        type: 'String',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'kind',
+        type: 'String',
+        required: true,
+        generated: false,
+        primary: false,
+        default: 'synonym'
+      },
+      {
+        name: 'created_at',
+        type: 'DateTime',
+        required: true,
+        generated: true,
+        primary: false
+      }
+    ],
+    keys: ['id'],
+    readonly: false
+  },
+  {
+    name: 'creator',
+    label: 'Creators',
+    fields: [
+      {
+        name: 'id',
+        type: 'BigInt',
+        required: true,
+        generated: true,
+        primary: true
+      },
+      {
+        name: 'user_id',
+        type: 'BigInt',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'code',
+        type: 'String',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'display_name',
+        type: 'String',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'channel_url',
+        type: 'String',
+        required: false,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'commission_pct',
+        type: 'Decimal',
+        required: true,
+        generated: false,
+        primary: false,
+        default: 5
+      },
+      {
+        name: 'flat_fee_inr',
+        type: 'Decimal',
+        required: false,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'status',
+        type: 'String',
+        required: true,
+        generated: false,
+        primary: false,
+        default: 'pending'
+      },
+      {
+        name: 'disclosure_accepted_at',
+        type: 'DateTime',
+        required: false,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'created_at',
+        type: 'DateTime',
+        required: true,
+        generated: true,
+        primary: false
+      }
+    ],
+    keys: ['id'],
+    readonly: false
   },
   {
     name: 'lead',
@@ -540,7 +873,7 @@ export const models: Model[] = [
       }
     ],
     keys: ['id'],
-    readonly: true
+    readonly: false
   },
   {
     name: 'location',
@@ -599,7 +932,95 @@ export const models: Model[] = [
       }
     ],
     keys: ['id'],
-    readonly: true
+    readonly: false
+  },
+  {
+    name: 'location_alias',
+    label: 'Location aliases',
+    fields: [
+      {
+        name: 'location_id',
+        type: 'Int',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'text',
+        type: 'String',
+        required: true,
+        generated: false,
+        primary: false
+      }
+    ],
+    keys: ['location_id', 'text'],
+    readonly: false
+  },
+  {
+    name: 'payout',
+    label: 'Payouts',
+    fields: [
+      {
+        name: 'id',
+        type: 'BigInt',
+        required: true,
+        generated: true,
+        primary: true
+      },
+      {
+        name: 'creator_id',
+        type: 'BigInt',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'period_month',
+        type: 'DateTime',
+        required: true,
+        generated: false,
+        primary: false,
+        dateOnly: true
+      },
+      {
+        name: 'amount',
+        type: 'Decimal',
+        required: true,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'status',
+        type: 'String',
+        required: true,
+        generated: false,
+        primary: false,
+        default: 'pending'
+      },
+      {
+        name: 'paid_at',
+        type: 'DateTime',
+        required: false,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'reference',
+        type: 'String',
+        required: false,
+        generated: false,
+        primary: false
+      },
+      {
+        name: 'created_at',
+        type: 'DateTime',
+        required: true,
+        generated: true,
+        primary: false
+      }
+    ],
+    keys: ['id'],
+    readonly: false
   },
   {
     name: 'review',
@@ -672,7 +1093,7 @@ export const models: Model[] = [
       }
     ],
     keys: ['id'],
-    readonly: true
+    readonly: false
   },
   {
     name: 'search_log',

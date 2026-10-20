@@ -3,11 +3,32 @@ export const options: Record<string, string[]> = {
   'business.source': ['owner', 'team', 'osm', 'import', 'demo'],
   'location.level': ['state', 'district', 'city', 'locality', 'landmark'],
   'concept.type': ['category', 'service'],
+  'concept_alias.kind': ['main', 'synonym', 'misspelling', 'local', 'abbreviation'],
   'app_user.role': ['owner', 'creator', 'admin', 'customer'],
   'review.status': ['pending', 'approved', 'rejected'],
+  'creator.status': ['pending', 'active', 'suspended'],
   'lead.status': ['new', 'contacted', 'booked', 'lost', 'spam'],
-  'lead.source': ['web', 'whatsapp', 'missed_call', 'phone', 'creator']
+  'lead.source': ['web', 'whatsapp', 'missed_call', 'phone', 'creator'],
+  'payout.status': ['pending', 'paid', 'cancelled'],
+  'business_subscription.plan': ['verified', 'featured', 'premium'],
+  'business_media.kind': ['logo', 'photo', 'menu']
 };
+export const references: Record<string, string> = {
+  business_id: 'business',
+  city_id: 'location',
+  locality_id: 'location',
+  concept_id: 'concept',
+  attribute_id: 'attribute',
+  owner_user_id: 'app_user',
+  user_id: 'app_user',
+  creator_id: 'creator',
+  payout_id: 'payout',
+  location_id: 'location',
+  search_id: 'search_log'
+};
+export function reference(model: string, field: string) {
+  return field === 'parent_id' ? model : references[field];
+}
 export function human(value: string) {
   const labels: Record<string, string> = {
     business_id: 'Place',
