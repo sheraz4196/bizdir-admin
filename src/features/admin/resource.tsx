@@ -1,20 +1,374 @@
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  Plus,
   Search,
   X,
+  Pencil,
+  Trash2,
   ChevronLeft,
   ChevronRight,
   SlidersHorizontal,
   Building2,
   RefreshCw,
-  LoaderCircle,
-  Eye
+  Eye,
+  LoaderCircle
 } from 'lucide-react';
-import { models } from './models';
-import { human, options } from './options';
-import { readData } from './api';
+import { toast } from 'sonner';
+import { models, type Model, type Field } from './models';
+import { human, options, reference } from './options';
+import { readData, saveRecord, deleteRecord, lookup } from './api';
 type Row = Record<string, any>;
+const descriptions: Record<string, string> = {
+  business: 'Manage the places people discover, visit, and love.',
+  location: 'Build your local reach, from states to neighborhoods.',
+  concept: 'Organize the categories and services that connect people to places.',
+  review: 'Build trust with thoughtful review moderation.',
+  lead: 'Follow every enquiry from first contact to booking.',
+  app_user: 'Manage the people behind your directory.'
+};
+function Relation({
+  model,
+  field,
+  value,
+  onChange,
+  required
+}: {
+  model: string;
+  field: string;
+  value: any;
+  onChange: (v: string) => void;
+  required: boolean;
+}) {
+  const [search, setSearch] = useState('');
+  const [term, setTerm] = useState('');
+  useEffect(() => {
+    const t = setTimeout(() => setTerm(search), 250);
+    return () => clearTimeout(t);
+  }, [search]);
+  const q = useQuery({
+    queryKey: ['admin-lookup', model, term, value, field],
+    queryFn: () =>
+      lookup({ data: { model, search: term, id: value ? String(value) : undefined, field } })
+  });
+  return (
+    <div className='bd-relation'>
+      <input
+        aria-label={`Search ${human(field)} options`}
+        placeholder='Search available records…'
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      <select required={required} value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
+        <option value=''>{q.isPending ? 'Loading…' : 'Select a record'}</option>
+        {value && !q.data?.some((r: any) => String(r.id) === String(value)) && (
+          <option value={value}>Current record #{value}</option>
+        )}
+        {q.data?.map((r: any) => (
+          <option key={r.id} value={r.id}>
+            {r.label}
+          </option>
+        ))}
+      </select>
+      {q.error && <small className='bd-field-error'>Could not load options.</small>}
+      <small>Search by name to find records beyond the first 50.</small>
+    </div>
+  );
+}
+function Editor({
+  m,
+  original,
+  onClose,
+  onSaved
+}: {
+  m: Model;
+  original?: Row;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [values, setValues] = useState<Row>(() =>
+    original
+      ? { ...original }
+      : Object.fromEntries(
+          m.fields
+            .filter((f) => !f.generated)
+            .map((f) => [f.name, f.default ?? (f.type === 'Boolean' ? false : '')])
+        )
+  );
+  const panelRef = useRef<HTMLElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const fields = m.fields.filter((f) => !f.generated);
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const focusable = () =>
+      Array.from(
+        panelRef.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href]'
+        ) ?? []
+      );
+    focusable()[0]?.focus();
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !busy) onClose();
+      if (e.key === 'Tab') {
+        const items = focusable();
+        const first = items[0],
+          last = items.at(-1);
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', handler);
+    const old = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = old;
+      previous?.focus();
+      document.removeEventListener('keydown', handler);
+    };
+  }, [busy, onClose]);
+  const slugify = (value: string) =>
+    value
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, m.name === 'concept' || m.name === 'attribute' ? '_' : '-')
+      .replace(/^[-_]+|[-_]+$/g, '');
+  const set = (name: string, value: any) =>
+    setValues((v) => ({
+      ...v,
+      [name]: value,
+      ...(name === 'city_id' ? { locality_id: '' } : {}),
+      ...(!original &&
+      name === 'name' &&
+      m.fields.some((f) => f.name === 'slug') &&
+      (!v.slug || v.slug === slugify(v.name || ''))
+        ? { slug: slugify(value) }
+        : {})
+    }));
+  function control(f: Field) {
+    const disabled = !!original && m.keys.includes(f.name);
+    const choices = options[`${m.name}.${f.name}`];
+    const ref = reference(m.name, f.name);
+    let value = values[f.name] ?? '';
+    if (f.type === 'Boolean')
+      return (
+        <label className='bd-toggle'>
+          <input
+            type='checkbox'
+            checked={!!value}
+            disabled={disabled}
+            onChange={(e) => set(f.name, e.target.checked)}
+          />
+          <span>{value ? 'Enabled' : 'Disabled'}</span>
+        </label>
+      );
+    if (choices)
+      return (
+        <select
+          value={value}
+          required={f.required}
+          disabled={disabled}
+          onChange={(e) => set(f.name, e.target.value)}
+        >
+          <option value=''>Select {human(f.name).toLowerCase()}</option>
+          {choices.map((c) => (
+            <option key={c} value={c}>
+              {human(c)}
+            </option>
+          ))}
+        </select>
+      );
+    if (ref && !disabled)
+      return (
+        <Relation
+          model={ref}
+          field={f.name}
+          value={value}
+          onChange={(v) => set(f.name, v)}
+          required={f.required}
+        />
+      );
+    if (f.type === 'DateTime' && value) {
+      const date = new Date(value);
+      if (!isNaN(date.getTime()))
+        value = f.timeOnly
+          ? date.toISOString().slice(11, 16)
+          : f.dateOnly
+            ? date.toISOString().slice(0, 10)
+            : date.toISOString().slice(0, 16);
+    }
+    if (f.type === 'Json' && typeof value !== 'string') value = JSON.stringify(value, null, 2);
+    if (['description', 'comment', 'message', 'srtext', 'parsed'].includes(f.name))
+      return (
+        <textarea
+          rows={4}
+          maxLength={f.name === 'description' ? 500 : f.name === 'comment' ? 1000 : undefined}
+          value={value}
+          required={f.required}
+          disabled={disabled}
+          onChange={(e) => set(f.name, e.target.value)}
+        />
+      );
+    return (
+      <input
+        value={value}
+        required={f.required}
+        disabled={disabled}
+        type={
+          f.type === 'DateTime'
+            ? f.timeOnly
+              ? 'time'
+              : f.dateOnly
+                ? 'date'
+                : 'datetime-local'
+            : ['Int', 'Decimal', 'BigInt'].includes(f.type)
+              ? 'number'
+              : f.name === 'email'
+                ? 'email'
+                : f.name === 'website' || f.name === 'url' || f.name === 'channel_url'
+                  ? 'url'
+                  : 'text'
+        }
+        step={f.type === 'Decimal' ? 'any' : '1'}
+        placeholder={
+          f.name === 'phone' || f.name === 'customer_phone'
+            ? '+919876543210'
+            : f.name === 'slug'
+              ? m.name === 'concept' || m.name === 'attribute'
+                ? 'example_category'
+                : 'example-place'
+              : ''
+        }
+        onChange={(e) => set(f.name, e.target.value)}
+      />
+    );
+  }
+  return (
+    <div className='bd-modal-backdrop'>
+      <section
+        ref={panelRef}
+        className='bd-editor'
+        role='dialog'
+        aria-modal='true'
+        aria-labelledby='editor-title'
+      >
+        <div className='bd-editor-heading'>
+          <div>
+            <span className='bd-eyebrow'>{original ? 'EDIT RECORD' : 'GROW YOUR DIRECTORY'}</span>
+            <h2 id='editor-title'>
+              {original ? 'Edit' : 'Add'}{' '}
+              {m.name === 'business' ? 'place' : human(m.name).toLowerCase()}
+            </h2>
+          </div>
+          <button className='bd-icon' aria-label='Close editor' disabled={busy} onClick={onClose}>
+            <X />
+          </button>
+        </div>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setBusy(true);
+            setError('');
+            try {
+              await saveRecord({ data: { model: m.name, values, original } });
+              toast.success('Record saved');
+              onSaved();
+            } catch (e) {
+              setError((e as Error).message);
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          <div className='bd-editor-body'>
+            {m.name === 'business' && (
+              <div className='bd-form-note'>
+                Add the place details below. After saving, use Place categories, Place attributes,
+                Opening hours, and Place media to complete the listing.
+              </div>
+            )}
+            <div className='bd-form-grid'>
+              {m.name === 'business' && (
+                <label className='bd-field bd-full'>
+                  <span>
+                    Primary category <b>*</b>
+                  </span>
+                  <Relation
+                    model='concept'
+                    field='primary_concept_id'
+                    value={values.primary_concept_id}
+                    onChange={(v) => set('primary_concept_id', v)}
+                    required={!original}
+                  />
+                </label>
+              )}
+              {fields.map((f) => (
+                <label
+                  className={
+                    ['description', 'comment', 'message', 'parsed'].includes(f.name)
+                      ? 'bd-field bd-full'
+                      : 'bd-field'
+                  }
+                  key={f.name}
+                >
+                  <span>
+                    {human(f.name)} {f.required && <b>*</b>}
+                  </span>
+                  {control(f)}
+                  {f.name === 'slug' && (
+                    <small>
+                      Unique URL identifier. Use lowercase letters, numbers, and{' '}
+                      {m.name === 'concept' || m.name === 'attribute' ? 'underscores' : 'hyphens'}.
+                    </small>
+                  )}
+                </label>
+              ))}
+              {['business', 'location'].includes(m.name) &&
+                ['latitude', 'longitude'].map((n) => (
+                  <label className='bd-field' key={n}>
+                    <span>
+                      {human(n)} {m.name === 'business' && <b>*</b>}
+                    </span>
+                    <input
+                      type='number'
+                      step='any'
+                      min={n === 'latitude' ? -90 : -180}
+                      max={n === 'latitude' ? 90 : 180}
+                      required={m.name === 'business'}
+                      value={values[n] ?? ''}
+                      onChange={(e) => set(n, e.target.value)}
+                    />
+                    <small>Coordinates for nearby and map searches.</small>
+                  </label>
+                ))}
+            </div>
+            {error && (
+              <div role='alert' className='bd-error'>
+                {error}
+              </div>
+            )}
+          </div>
+          <div className='bd-editor-footer'>
+            <span>* Required fields</span>
+            <button type='button' className='bd-btn' disabled={busy} onClick={onClose}>
+              Cancel
+            </button>
+            <button className='bd-btn bd-primary' disabled={busy}>
+              {busy && <LoaderCircle size={15} className='bd-spin' />}
+              {busy ? 'Saving…' : 'Save changes'}
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  );
+}
 function display(value: any) {
   if (value === null || value === undefined || value === '') return '—';
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
@@ -23,11 +377,16 @@ function display(value: any) {
 }
 export function ResourcePage({ resource }: { resource: string }) {
   const m = models.find((x) => x.name === resource);
+  const cache = useQueryClient();
   const [search, setSearch] = useState('');
   const [term, setTerm] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(0);
+  const [editor, setEditor] = useState<Row | null | undefined>();
+  const [deleting, setDeleting] = useState<Row | null>(null);
   const [inspecting, setInspecting] = useState<Row | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
   useEffect(() => {
     const t = setTimeout(() => {
       setTerm(search);
@@ -48,6 +407,11 @@ export function ResourcePage({ resource }: { resource: string }) {
         <p>Choose a resource from the navigation.</p>
       </div>
     );
+  const invalidate = () => {
+    cache.invalidateQueries({ queryKey: ['admin-records'] });
+    cache.invalidateQueries({ queryKey: ['admin-overview'] });
+    cache.invalidateQueries({ queryKey: ['admin-lookup'] });
+  };
   const priority: Record<string, string[]> = {
     business: ['name', 'phone', 'city_id', 'status', 'verified', 'created_at'],
     location: ['name', 'level', 'parent_id', 'slug', 'is_active'],
@@ -73,8 +437,14 @@ export function ResourcePage({ resource }: { resource: string }) {
             {m.label}
             <span className='bd-title-dot'>.</span>
           </h1>
-          <p>{`Browse ${m.label.toLowerCase()} across your directory.`}</p>
+          <p>{descriptions[m.name] || `Manage ${m.label.toLowerCase()} across your directory.`}</p>
         </div>
+        {!m.readonly && (
+          <button className='bd-btn bd-primary' onClick={() => setEditor(null)}>
+            <Plus size={17} />
+            Add {m.name === 'business' ? 'place' : 'record'}
+          </button>
+        )}
       </div>
       <div className='bd-card'>
         <div className='bd-resource-toolbar'>
@@ -170,6 +540,27 @@ export function ResourcePage({ resource }: { resource: string }) {
                           <Eye size={16} />
                         </button>
                       )}
+                      {!m.readonly && (
+                        <>
+                          <button
+                            className='bd-icon'
+                            aria-label='Edit record'
+                            onClick={() => setEditor(r)}
+                          >
+                            <Pencil size={15} />
+                          </button>
+                          <button
+                            className='bd-icon bd-danger'
+                            aria-label='Delete record'
+                            onClick={() => {
+                              setDeleteError('');
+                              setDeleting(r);
+                            }}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -188,8 +579,14 @@ export function ResourcePage({ resource }: { resource: string }) {
                   <p>
                     {term || status
                       ? 'Try another search or clear your filters.'
-                      : 'No records to display yet.'}
+                      : `Add your first ${m.name === 'business' ? 'place' : 'record'} to get started.`}
                   </p>
+                  {!m.readonly && !term && !status && (
+                    <button className='bd-btn' onClick={() => setEditor(null)}>
+                      <Plus size={15} />
+                      Add record
+                    </button>
+                  )}
                 </div>
               )
             )}
@@ -251,6 +648,62 @@ export function ResourcePage({ resource }: { resource: string }) {
                   </div>
                 ))}
               </dl>
+            </div>
+          </section>
+        </div>
+      )}
+      {editor !== undefined && (
+        <Editor
+          m={m}
+          original={editor ?? undefined}
+          onClose={() => setEditor(undefined)}
+          onSaved={() => {
+            setEditor(undefined);
+            invalidate();
+          }}
+        />
+      )}
+      {deleting && (
+        <div className='bd-modal-backdrop'>
+          <section
+            className='bd-confirm'
+            role='alertdialog'
+            aria-modal='true'
+            aria-labelledby='delete-title'
+          >
+            <span className='bd-delete-icon'>
+              <Trash2 />
+            </span>
+            <h2 id='delete-title'>Delete this record?</h2>
+            <p>
+              This permanently removes the record. Related records may also be removed according to
+              the database relationships.
+            </p>
+            {deleteError && <div className='bd-error'>{deleteError}</div>}
+            <div>
+              <button className='bd-btn' disabled={busy} onClick={() => setDeleting(null)}>
+                Cancel
+              </button>
+              <button
+                className='bd-btn bd-delete-button'
+                disabled={busy}
+                onClick={async () => {
+                  setBusy(true);
+                  try {
+                    await deleteRecord({ data: { model: m.name, original: deleting } });
+                    setDeleting(null);
+                    toast.success('Record deleted');
+                    if (q.data?.rows.length === 1 && page > 0) setPage((p) => p - 1);
+                    invalidate();
+                  } catch (e) {
+                    setDeleteError((e as Error).message);
+                  } finally {
+                    setBusy(false);
+                  }
+                }}
+              >
+                {busy ? 'Deleting…' : 'Delete record'}
+              </button>
             </div>
           </section>
         </div>
