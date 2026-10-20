@@ -1,4 +1,7 @@
 export const options: Record<string, string[]> = {
+  'attribute.value_type': ['bool', 'number', 'choice'],
+  'business_claim.status': ['pending', 'approved', 'rejected'],
+  'business_alias.kind': ['former_name', 'short_name', 'local_spelling', 'other'],
   'business.status': ['pending', 'active', 'suspended', 'deleted'],
   'business.source': ['owner', 'team', 'osm', 'import', 'demo'],
   'location.level': ['state', 'district', 'city', 'locality', 'landmark'],
@@ -24,7 +27,11 @@ export const references: Record<string, string> = {
   creator_id: 'creator',
   payout_id: 'payout',
   location_id: 'location',
-  search_id: 'search_log'
+  search_id: 'search_log',
+  option_id: 'attribute_option',
+  reviewed_by: 'app_user',
+  changed_by: 'app_user',
+  lead_id: 'lead'
 };
 export function reference(model: string, field: string) {
   return field === 'parent_id' ? model : references[field];

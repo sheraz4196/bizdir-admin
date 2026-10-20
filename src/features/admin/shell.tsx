@@ -20,7 +20,7 @@ import { models } from './models';
 import './admin.css';
 const groups = [
   { title: 'WORKSPACE', names: ['business', 'location', 'concept', 'attribute'] },
-  { title: 'COMMUNITY', names: ['app_user', 'review', 'lead', 'creator'] },
+  { title: 'COMMUNITY', names: ['app_user', 'review', 'lead', 'creator', 'business_claim'] },
   { title: 'COMMERCE', names: ['business_subscription', 'payout'] },
   {
     title: 'PLACE DETAILS',
@@ -30,10 +30,18 @@ const groups = [
       'business_concept',
       'business_attribute',
       'concept_alias',
-      'location_alias'
+      'location_alias',
+      'business_alias',
+      'business_closure',
+      'attribute_option',
+      'attribute_alias',
+      'concept_attribute'
     ]
   },
-  { title: 'INSIGHTS', names: ['search_log', 'click_log'] }
+  {
+    title: 'INSIGHTS',
+    names: ['search_log', 'click_log', 'search_impression', 'lead_status_history']
+  }
 ];
 const icons: Record<string, typeof Building2> = {
   business: Building2,
